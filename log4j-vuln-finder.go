@@ -62,13 +62,13 @@ func handleJar(path string, ra io.ReaderAt, sz int64) {
 		switch strings.ToLower(filepath.Ext(file.Name)) {
 		case ".class":
 			fr, err := file.Open()
+			defer fr.Close()
 			if err != nil {
 				fmt.Printf("can't open JAR file member for reading: %s (%s): %v\n", path, file.Name, err)
 				continue
 			}
 			hasher := sha256.New()
 			_, err = io.Copy(hasher, fr)
-			fr.Close()
 			if err != nil {
 				fmt.Printf("can't read JAR file member: %s (%s): %v\n", path, file.Name, err)
 			}
@@ -78,12 +78,12 @@ func handleJar(path string, ra io.ReaderAt, sz int64) {
 			}
 		case ".jar", ".war":
 			fr, err := file.Open()
+			defer fr.Close()
 			if err != nil {
 				fmt.Printf("can't open JAR file member for reading: %s (%s): %v\n", path, file.Name, err)
 				continue
 			}
 			buf, err := ioutil.ReadAll(fr)
-			fr.Close()
 			if err != nil {
 				fmt.Printf("can't read JAR file member: %s (%s): %v\n", path, file.Name, err)
 			}
